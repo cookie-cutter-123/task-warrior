@@ -9,10 +9,29 @@ logging.basicConfig(level=logging.DEBUG, format='%(message)s')
 def delete_all_tasks():
     """
     Function to delete all tasks.
+    This function repeatedly fetches the list of tasks and deletes them until no tasks remain.
     """
-    subprocess.run(['task', 'rc.confirmation:no', 'rc.bulk:yes', 'rc.report.list.sort:'], capture_output=True, text=True)
-    result = subprocess.run(['task', 'delete', 'all'], input='yes\n', capture_output=True, text=True)
-    print(result.stdout)
+    while True:
+        # Fetch the list of tasks
+        result = subprocess.run(['task', 'list'], capture_output=True, text=True)
+
+        # Extract task IDs from the output
+        task_ids = [line.split()[0] for line in result.stdout.split('\n') if line.strip() and line.split()[0].isdigit()]
+
+        # Break the loop if there are no task IDs
+        if not task_ids:
+            break
+
+        # Delete each task by ID
+        for task_id in task_ids:
+            subprocess.run(['task', task_id, 'delete'], input='yes\n', capture_output=True, text=True)
+
+        # Fetch the list of tasks again to check if any remain
+        result = subprocess.run(['task', 'list'], capture_output=True, text=True)
+
+        # Break the loop if no tasks remain
+        if "No matches" in result.stdout:
+            break
 
 
 def delete_task_by_id(task_id):
@@ -20,14 +39,17 @@ def delete_task_by_id(task_id):
     Function to delete a task by its ID.
     """
     result = subprocess.run(['task', str(task_id), 'delete'], input='yes\n', capture_output=True, text=True)
-    print(f"Deleted task {task_id}: {result.stdout}")
+    logging.debug(f"Deleted task {task_id}: {result.stdout}")
+    assert 'Deleted 1 task' in result.stdout
 
 
 @pytest.fixture(autouse=True)
-def run_before_tests():
+def run_before_and_after_tests():
     """
-    Fixture to run before each test to delete all tasks.
+    Fixture to run before and after each test to delete all tasks.
     """
+    delete_all_tasks()
+    yield
     delete_all_tasks()
 
 
@@ -109,18 +131,30 @@ def test_taskwarrior_delete():
     """
     Test that deleting a task returns a success message.
     """
+    # Add a task to delete
+    subprocess.run(['task', 'add', 'Test task to delete'], capture_output=True, text=True)
+
     # List tasks before deletion
     task_list_before = subprocess.run(['task', 'list'], capture_output=True, text=True).stdout
     logging.debug("Task list before deletion: " + task_list_before)
 
-    # Delete the task with ID 2
-    result = subprocess.run(['task', '2', 'delete'], input='yes\n', capture_output=True, text=True)
+    # Get the task ID to delete
+    task_id = None
+    for line in task_list_before.split('\n'):
+        if 'Test task to delete' in line:
+            task_id = line.split()[0]
+            break
+
+    assert task_id is not None, "Task ID for 'Test task to delete' not found"
+
+    # Delete the task with the found ID
+    result = subprocess.run(['task', task_id, 'delete'], input='yes\n', capture_output=True, text=True)
     assert 'Deleted 1 task' in result.stdout
 
     # List tasks after deletion
     task_list_after = subprocess.run(['task', 'list'], capture_output=True, text=True).stdout
     logging.debug("Task list after deletion: " + task_list_after)
-    # TODO assert that the test task is no longer in the list
+    assert 'Test task to delete' not in task_list_after
 
 
 def test_taskwarrior_start():

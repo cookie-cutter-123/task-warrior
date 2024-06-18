@@ -1,5 +1,4 @@
 import logging
-import subprocess
 from tests.task_operations import (
     add_task,
     delete_task_by_id,
@@ -8,7 +7,7 @@ from tests.task_operations import (
     get_task_info,
     start_task,
     stop_task,
-    annotate_task, find_line_containing_keyword
+    annotate_task, find_line_containing_keyword, mark_task_done, check_taskwarrior_version
 )
 import pytest
 
@@ -25,7 +24,7 @@ def test_taskwarrior_version():
     """
     Test that Task warrior's version command returns the expected version format.
     """
-    result = subprocess.run(['task', '--version'], capture_output=True, text=True)
+    result = check_taskwarrior_version()
     assert result.stdout.startswith('3.')
 
 
@@ -55,7 +54,7 @@ def test_taskwarrior_done():
     """
     result = add_task('Test task finished')
     assert 'Created task' in result.stdout
-    result = subprocess.run(['task', '1', 'done'], capture_output=True, text=True)
+    result = mark_task_done(1)
     assert 'Completed task' in result.stdout
     delete_task_by_id(1)  # Remove the created task
 

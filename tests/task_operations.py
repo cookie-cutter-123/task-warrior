@@ -46,6 +46,13 @@ def delete_task_by_id(task_id):
     assert 'Deleted 1 task' in result.stdout
 
 
+def check_taskwarrior_version():
+    """
+    Function to check the Taskwarrior version.
+    """
+    return subprocess.run(['task', '--version'], capture_output=True, text=True)
+
+
 def add_task(description, *args):
     """
     Function to add a task with a description and optional arguments.
@@ -99,6 +106,13 @@ def list_tasks():
     Function to list all tasks.
     """
     return subprocess.run(['task', 'list'], capture_output=True, text=True)
+
+
+def mark_task_done(task_id):
+    """
+    Function to mark a task as done by its ID.
+    """
+    return subprocess.run(['task', str(task_id), 'done'], capture_output=True, text=True)
 
 
 def find_line_containing_keyword(text, keyword):

@@ -22,7 +22,7 @@ jobs:
       - name: Install Taskwarrior
         run: |
           sudo apt-get update
-          sudo apt-get install -y task
+          sudo apt-get install -y taskwarrior
 
       - name: Install dependencies
         run: |

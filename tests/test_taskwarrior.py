@@ -6,17 +6,29 @@ import pytest
 logging.basicConfig(level=logging.DEBUG, format='%(message)s')
 
 
-@pytest.fixture(scope='module', autouse=True)
-def cleanup_tasks():
+def delete_all_tasks():
     """
-    Fixture to clean up all tasks after the tests are run.
-    This runs once per module and deletes all tasks by running 'task delete all'.
+    Function to delete all tasks.
     """
-    yield
-    # Delete all tasks after tests
     subprocess.run(['task', 'rc.confirmation:no', 'rc.bulk:yes', 'rc.report.list.sort:'], capture_output=True, text=True)
     result = subprocess.run(['task', 'delete', 'all'], input='yes\n', capture_output=True, text=True)
     print(result.stdout)
+
+
+def delete_task_by_id(task_id):
+    """
+    Function to delete a task by its ID.
+    """
+    result = subprocess.run(['task', str(task_id), 'delete'], input='yes\n', capture_output=True, text=True)
+    print(f"Deleted task {task_id}: {result.stdout}")
+
+
+@pytest.fixture(autouse=True)
+def run_before_tests():
+    """
+    Fixture to run before each test to delete all tasks.
+    """
+    delete_all_tasks()
 
 
 def test_taskwarrior_version():
@@ -33,22 +45,29 @@ def test_taskwarrior_add():
     """
     result = subprocess.run(['task', 'add', 'Test task'], capture_output=True, text=True)
     assert 'Created task' in result.stdout
+    delete_task_by_id(1)  # Remove the created task
 
 
 def test_taskwarrior_list():
     """
     Test that listing tasks in Taskwarrior includes the recently added task.
     """
+    result = subprocess.run(['task', 'add', 'Test task in list'], capture_output=True, text=True)
+    assert 'Created task' in result.stdout
     result = subprocess.run(['task', 'list'], capture_output=True, text=True)
-    assert 'Test task' in result.stdout
+    assert 'Test task in list' in result.stdout
+    delete_task_by_id(1)  # Remove the created task
 
 
 def test_taskwarrior_done():
     """
     Test that marking a task as done in Taskwarrior returns a success message.
     """
+    result = subprocess.run(['task', 'add', 'Test task finished'], capture_output=True, text=True)
+    assert 'Created task' in result.stdout
     result = subprocess.run(['task', '1', 'done'], capture_output=True, text=True)
     assert 'Completed task' in result.stdout
+    delete_task_by_id(1)  # Remove the created task
 
 
 def test_taskwarrior_add_with_priority():
@@ -58,18 +77,21 @@ def test_taskwarrior_add_with_priority():
     result = subprocess.run(['task', 'add', 'High priority task', 'priority:H'], capture_output=True, text=True)
     assert 'Created task' in result.stdout
     assert 'High priority task' in subprocess.run(['task', 'list'], capture_output=True, text=True).stdout
+    delete_task_by_id(1)  # Remove the created task
 
 
 def test_taskwarrior_modify():
     """
     Test that modifying a task returns a success message.
     """
-    # Modify the task with ID 2 to have the project 'Home'
-    result = subprocess.run(['task', '2', 'modify', 'project:Home'], capture_output=True, text=True)
+    # Add a task to modify
+    subprocess.run(['task', 'add', 'Test task modification'], capture_output=True, text=True)
+    # Modify the task with ID 1 to have the project 'Home'
+    result = subprocess.run(['task', '1', 'modify', 'project:Home'], capture_output=True, text=True)
     assert 'Modified 1 task' in result.stdout
 
     # Retrieve the task info to verify the modification
-    task_info = subprocess.run(['task', '2', 'info'], capture_output=True, text=True).stdout
+    task_info = subprocess.run(['task', '1', 'info'], capture_output=True, text=True).stdout
 
     # Split the output into lines in order to locate the project line
     lines = task_info.split('\n')
@@ -80,6 +102,7 @@ def test_taskwarrior_modify():
 
     # Assert that 'Home' is in the trimmed parts of the project line
     assert 'Home' in project_line.split()
+    delete_task_by_id(1)  # Remove the created task
 
 
 def test_taskwarrior_delete():
@@ -104,21 +127,36 @@ def test_taskwarrior_start():
     """
     Test that starting a task returns a success message.
     """
-    result = subprocess.run(['task', '3', 'start'], capture_output=True, text=True)
+    # Add a task to start
+    subprocess.run(['task', 'add', 'Test task start'], capture_output=True, text=True)
+    result = subprocess.run(['task', '1', 'start'], capture_output=True, text=True)
     assert 'Started 1 task' in result.stdout
+    delete_task_by_id(1)  # Remove the created task
 
 
 def test_taskwarrior_stop():
     """
     Test that stopping a task returns a success message.
     """
-    result = subprocess.run(['task', '3', 'stop'], capture_output=True, text=True)
+    # Add a task to stop
+    subprocess.run(['task', 'add', 'Test task stop'], capture_output=True, text=True)
+
+    # Start the task
+    subprocess.run(['task', '1', 'start'], capture_output=True, text=True)
+
+    # Stop the task
+    result = subprocess.run(['task', '1', 'stop'], capture_output=True, text=True)
     assert 'Stopped 1 task' in result.stdout
+
+    delete_task_by_id(1)  # Remove the created task
 
 
 def test_taskwarrior_annotate():
     """
     Test that adding an annotation to a task returns a success message.
     """
-    result = subprocess.run(['task', '3', 'annotate', 'This is a note'], capture_output=True, text=True)
+    # Add a task to annotate
+    subprocess.run(['task', 'add', 'Test task note'], capture_output=True, text=True)
+    result = subprocess.run(['task', '1', 'annotate', 'This is a note'], capture_output=True, text=True)
     assert 'Annotated 1 task' in result.stdout
+    delete_task_by_id(1)  # Remove the created task

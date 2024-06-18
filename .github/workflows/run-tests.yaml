@@ -24,6 +24,12 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y taskwarrior
 
+      - name: Create Taskwarrior config
+        run: |
+          mkdir -p ~/.task  # Creates the .task directory in the home directory
+          echo 'data.location=~/.task' > ~/.taskrc  # Sets data location in .taskrc
+          echo 'Confirmation=off' >> ~/.taskrc  # Disables confirmation prompts in .taskrc
+
       - name: Install dependencies
         run: |
           python -m venv venv

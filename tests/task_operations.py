@@ -99,3 +99,14 @@ def list_tasks():
     Function to list all tasks.
     """
     return subprocess.run(['task', 'list'], capture_output=True, text=True)
+
+
+def find_line_containing_keyword(text, keyword):
+    """
+    Function to find a line containing a specific keyword in a given text.
+    """
+    lines = text.split('\n')
+    for line in lines:
+        if keyword in line:
+            return line
+    return None

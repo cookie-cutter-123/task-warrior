@@ -8,7 +8,7 @@ from tests.task_operations import (
     get_task_info,
     start_task,
     stop_task,
-    annotate_task
+    annotate_task, find_line_containing_keyword
 )
 import pytest
 
@@ -79,8 +79,7 @@ def test_taskwarrior_modify():
     assert 'Modified 1 task' in result.stdout
 
     task_info = get_task_info(1).stdout
-    lines = task_info.split('\n')
-    project_line = next(line for line in lines if 'Project' in line)
+    project_line = find_line_containing_keyword(task_info, 'Project')
     logging.debug("Project line: %s", project_line)
     assert 'Home' in project_line.split()
     delete_task_by_id(1)  # Remove the created task
@@ -114,4 +113,40 @@ def test_taskwarrior_annotate():
     add_task('Test task note')
     result = annotate_task(1, 'This is a note')
     assert 'Annotated 1 task' in result.stdout
+    delete_task_by_id(1)  # Remove the created task
+
+
+def test_taskwarrior_project():
+    """
+    Test that adding a task with a project returns a success message.
+    """
+    result = add_task('Project task', 'project:Home')
+    assert 'Created task' in result.stdout
+    assert 'Home' in get_task_info(1).stdout
+    delete_task_by_id(1)  # Remove the created task
+
+
+def test_taskwarrior_due():
+    """
+    Test that adding a task with a due date returns a success message.
+    """
+    result = add_task('Task with due date', 'due:tomorrow')
+    assert 'Created task' in result.stdout
+    assert 'due' in get_task_info(1).stdout
+    delete_task_by_id(1)  # Remove the created task
+
+
+def test_taskwarrior_tag():
+    """
+    Test that adding a task with a tag returns a success message.
+    """
+    result = add_task('Tagged task', '+urgent')
+    assert 'Created task' in result.stdout
+
+    task_info = get_task_info(1).stdout
+    tag_line = find_line_containing_keyword(task_info, 'Tags')
+    logging.debug("Tag line: %s", tag_line)
+
+    # Assert that the tag 'urgent' is in the tags line
+    assert 'urgent' in tag_line.split()
     delete_task_by_id(1)  # Remove the created task

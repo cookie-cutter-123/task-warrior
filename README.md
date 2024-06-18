@@ -35,3 +35,8 @@ To check the code for linting errors, run the following command:
 ```sh
 flake8
 ```
+
+## Notes and other scenarios
+
+For additional scenarios and notes, please refer to the [notes](notes.md) file.
+```

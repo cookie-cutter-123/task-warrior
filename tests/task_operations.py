@@ -8,7 +8,8 @@ logging.basicConfig(level=logging.DEBUG, format='%(message)s')
 def delete_all_tasks():
     """
     Function to delete all tasks.
-    This function repeatedly fetches the list of tasks and deletes them until no tasks remain.
+    This function repeatedly fetches the list of tasks
+    and deletes them until no tasks remain.
     """
     while True:
         # Fetch the list of tasks

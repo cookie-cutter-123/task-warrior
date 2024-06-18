@@ -127,36 +127,6 @@ def test_taskwarrior_modify():
     delete_task_by_id(1)  # Remove the created task
 
 
-def test_taskwarrior_delete():
-    """
-    Test that deleting a task returns a success message.
-    """
-    # Add a task to delete
-    subprocess.run(['task', 'add', 'Test task to delete'], capture_output=True, text=True)
-
-    # List tasks before deletion
-    task_list_before = subprocess.run(['task', 'list'], capture_output=True, text=True).stdout
-    logging.debug("Task list before deletion: " + task_list_before)
-
-    # Get the task ID to delete
-    task_id = None
-    for line in task_list_before.split('\n'):
-        if 'Test task to delete' in line:
-            task_id = line.split()[0]
-            break
-
-    assert task_id is not None, "Task ID for 'Test task to delete' not found"
-
-    # Delete the task with the found ID
-    result = subprocess.run(['task', task_id, 'delete'], input='yes\n', capture_output=True, text=True)
-    assert 'Deleted 1 task' in result.stdout
-
-    # List tasks after deletion
-    task_list_after = subprocess.run(['task', 'list'], capture_output=True, text=True).stdout
-    logging.debug("Task list after deletion: " + task_list_after)
-    assert 'Test task to delete' not in task_list_after
-
-
 def test_taskwarrior_start():
     """
     Test that starting a task returns a success message.

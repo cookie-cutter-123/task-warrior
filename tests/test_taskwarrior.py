@@ -1,4 +1,15 @@
-from tests.task_operations import *
+import logging
+import subprocess
+from tests.task_operations import (
+    add_task,
+    delete_task_by_id,
+    list_tasks,
+    modify_task,
+    get_task_info,
+    start_task,
+    stop_task,
+    annotate_task
+)
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG, format='%(message)s')

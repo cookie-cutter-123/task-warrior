@@ -1,4 +1,4 @@
-from task_operations import *
+from tests.task_operations import *
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG, format='%(message)s')

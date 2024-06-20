@@ -8,8 +8,7 @@ from tests.api.cart_operations import (
     list_carts
 )
 
-# Configure logging
-logging.basicConfig(level=logging.DEBUG, format='%(message)s')
+# Create a logger object named after the current module (__name__)
 logger = logging.getLogger(__name__)
 
 

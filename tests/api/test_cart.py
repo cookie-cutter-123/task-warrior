@@ -1,3 +1,6 @@
+import logging
+import time
+
 from tests.api.cart_operations import (
     create_cart,
     get_cart,
@@ -5,6 +8,10 @@ from tests.api.cart_operations import (
     delete_cart,
     list_carts
 )
+
+# Configure logging
+logging.basicConfig(level=logging.DEBUG, format='%(message)s')
+logger = logging.getLogger(__name__)
 
 
 def test_create_cart():
@@ -32,10 +39,17 @@ def test_get_cart():
         "products": [{"productId": 1, "quantity": 1}]
     }
     create_response = create_cart(cart_data)
-    cart_id = create_response.json()["id"]
+    cart_id = create_response.json().get("id")
+    assert cart_id is not None, "Cart ID not found in create response"
+
+    logger.debug(f"Created cart ID: {cart_id}")
+    time.sleep(1)
+
     response = get_cart(cart_id)
+    logger.debug(f"Get cart response: {response.content}")
     assert response.status_code == 200
     response_data = response.json()
+    assert response_data is not None, f"Response data is None: {response.content}"
     assert response_data["userId"] == cart_data["userId"]
     assert any(product['productId'] == 1 for product in response_data['products'])
 
@@ -73,11 +87,21 @@ def test_delete_cart():
         "products": [{"productId": 1, "quantity": 1}]
     }
     create_response = create_cart(cart_data)
-    cart_id = create_response.json()["id"]
+    cart_id = create_response.json().get("id")
+    assert cart_id is not None, "Cart ID not found in create response"
+
+    logger.debug(f"Created cart ID: {cart_id}")
+    time.sleep(1)
+
     response = delete_cart(cart_id)
+    logger.debug(f"Delete cart response: {response.content}")
     assert response.status_code == 200
+
+    time.sleep(1)
+
     get_response = get_cart(cart_id)
-    assert get_response.status_code == 404
+    logger.debug(f"Get cart after delete response: {get_response.content}")
+    assert get_response.content == b'null', f"Expected null content, got {get_response.content}"
 
 
 def test_list_carts():

@@ -24,8 +24,16 @@ pip install -r requirements.txt
 
 ## Run tests
 
+### Task Warrior CLI Tests
+
 ```bash
-pytest -v tests
+pytest -v tests/taskwarrior
+```
+
+### API Tests
+
+```bash
+pytest -v tests/api
 ```
 
 ## Linting

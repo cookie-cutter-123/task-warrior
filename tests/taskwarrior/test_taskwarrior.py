@@ -1,5 +1,5 @@
 import logging
-from tests.taskwarior.task_operations import (
+from tests.taskwarrior.task_operations import (
     add_task,
     delete_task_by_id,
     list_tasks,

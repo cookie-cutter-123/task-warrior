@@ -3,3 +3,6 @@ pytest
 
 # flake8: Tool for checking the style guide enforcement
 flake8
+
+# requests: HTTP library for making requests to APIs
+requests

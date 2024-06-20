@@ -1,5 +1,4 @@
 import logging
-import time
 
 from tests.api.cart_operations import (
     create_cart,
@@ -36,7 +35,6 @@ def test_get_cart():
     cart_id = 5
 
     logger.debug(f"Fetching cart ID: {cart_id}")
-    time.sleep(1)
 
     response = get_cart(cart_id)
     logger.debug(f"Get cart response: {response.content}")
@@ -84,13 +82,10 @@ def test_delete_cart():
     assert cart_id is not None, "Cart ID not found in create response"
 
     logger.debug(f"Created cart ID: {cart_id}")
-    time.sleep(1)
 
     response = delete_cart(cart_id)
     logger.debug(f"Delete cart response: {response.content}")
     assert response.status_code == 200
-
-    time.sleep(1)
 
     get_response = get_cart(cart_id)
     logger.debug(f"Get cart after delete response: {get_response.content}")

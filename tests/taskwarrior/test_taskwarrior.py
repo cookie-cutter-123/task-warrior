@@ -14,7 +14,7 @@ from tests.taskwarrior.task_operations import (
 )
 import pytest
 
-# Create a logger object named after the current module (__name__)
+# Create a logger object named after the current module
 logger = logging.getLogger(__name__)
 
 

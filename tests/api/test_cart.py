@@ -9,7 +9,7 @@ from tests.api.cart_operations import (
 )
 from tests.api.test_data import CART_DATA
 
-# Create a logger object named after the current module (__name__)
+# Create a logger object named after the current module
 logger = logging.getLogger(__name__)
 
 
@@ -83,5 +83,25 @@ def test_list_carts():
     """
     response = list_carts()
     assert response.status_code == 200
+
     response_data = response.json()
-    assert isinstance(response_data, list)
+    assert isinstance(response_data, list), "Expected a list of carts"
+    assert len(response_data) > 0, "Expected at least one cart in the list"
+
+    for cart in response_data:
+        assert "id" in cart, "Cart should have an 'id' field"
+        assert "userId" in cart, "Cart should have a 'userId' field"
+        assert "date" in cart, "Cart should have a 'date' field"
+        assert "products" in cart, "Cart should have a 'products' field"
+        assert isinstance(cart["products"], list), "Products should be a list"
+
+        for product in cart["products"]:
+            assert "productId" in product, "Product should have a 'productId' field"
+            assert "quantity" in product, "Product should have a 'quantity' field"
+
+    # Specific data checks (assuming at least one cart is always returned and has valid structure)
+    first_cart = response_data[0]
+    assert first_cart["id"] == 1, f"Expected cart ID to be 1, got {first_cart['id']}"
+    assert first_cart["userId"] == 1, f"Expected user ID to be 1, got {first_cart['userId']}"
+    assert any(product["productId"] == 1 for product in first_cart["products"]), \
+        "Expected at least one product with productId 1"

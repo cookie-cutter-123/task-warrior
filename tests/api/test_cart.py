@@ -7,6 +7,7 @@ from tests.api.cart_operations import (
     delete_cart,
     list_carts
 )
+from tests.api.test_data import CART_DATA
 
 # Create a logger object named after the current module (__name__)
 logger = logging.getLogger(__name__)
@@ -16,11 +17,7 @@ def test_create_cart():
     """
     Test creating a cart.
     """
-    cart_data = {
-        "userId": 1,
-        "date": "2024-06-19",
-        "products": [{"productId": 1, "quantity": 1}]
-    }
+    cart_data = CART_DATA["create"]
     response = create_cart(cart_data)
     assert response.status_code == 200
     response_data = response.json()
@@ -48,18 +45,11 @@ def test_update_cart():
     """
     Test updating a cart by its ID.
     """
-    cart_data = {
-        "userId": 1,
-        "date": "2024-06-19",
-        "products": [{"productId": 1, "quantity": 1}]
-    }
-    create_response = create_cart(cart_data)
+    create_data = CART_DATA["create"]
+    create_response = create_cart(create_data)
     cart_id = create_response.json()["id"]
-    updated_cart_data = {
-        "userId": 1,
-        "date": "2024-06-20",
-        "products": [{"productId": 2, "quantity": 2}]
-    }
+
+    updated_cart_data = CART_DATA["update"]
     response = update_cart(cart_id, updated_cart_data)
     assert response.status_code == 200
     response_data = response.json()
@@ -71,12 +61,8 @@ def test_delete_cart():
     """
     Test deleting a cart by its ID.
     """
-    cart_data = {
-        "userId": 1,
-        "date": "2024-06-19",
-        "products": [{"productId": 1, "quantity": 1}]
-    }
-    create_response = create_cart(cart_data)
+    create_data = CART_DATA["create"]
+    create_response = create_cart(create_data)
     cart_id = create_response.json().get("id")
     assert cart_id is not None, "Cart ID not found in create response"
 

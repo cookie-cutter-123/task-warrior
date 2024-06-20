@@ -112,7 +112,8 @@ def mark_task_done(task_id):
     """
     Function to mark a task as done by its ID.
     """
-    return subprocess.run(['task', str(task_id), 'done'], capture_output=True, text=True)
+    return subprocess.run(['task', str(task_id), 'done'],
+                          capture_output=True, text=True)
 
 
 def find_line_containing_keyword(text, keyword):

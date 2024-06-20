@@ -1,5 +1,5 @@
 import logging
-from tests.task_operations import (
+from tests.taskwarior.task_operations import (
     add_task,
     delete_task_by_id,
     list_tasks,
@@ -7,7 +7,10 @@ from tests.task_operations import (
     get_task_info,
     start_task,
     stop_task,
-    annotate_task, find_line_containing_keyword, mark_task_done, check_taskwarrior_version
+    annotate_task,
+    find_line_containing_keyword,
+    mark_task_done,
+    check_taskwarrior_version
 )
 import pytest
 

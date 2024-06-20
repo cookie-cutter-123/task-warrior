@@ -1,5 +1,5 @@
 import pytest
-from tests.task_operations import delete_all_tasks
+from tests.taskwarrior.task_operations import delete_all_tasks
 
 
 @pytest.fixture(autouse=True)

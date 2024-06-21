@@ -1,6 +1,6 @@
-# Task Warrior CLI Automation Tests
+# Task Warrior CLI and Cart API Automation Tests
 
-This project contains automated tests for the Task Warrior CLI application using `pytest`.
+This project contains automated tests for the Task Warrior CLI application and Cart API using `pytest`.
 
 ## Prerequisites
 

@@ -47,4 +47,3 @@ flake8
 ## Notes and other scenarios
 
 For additional scenarios and notes, please refer to the [notes](notes.md) file.
-```

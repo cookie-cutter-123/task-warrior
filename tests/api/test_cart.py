@@ -38,7 +38,8 @@ def test_get_cart():
     assert response.status_code == 200
     response_data = response.json()
     assert response_data is not None, f"Response data is None: {response.content}"
-    assert response_data["id"] == cart_id, f"Expected cart ID {cart_id}, got {response_data['id']}"
+    assert response_data["id"] == cart_id, (f"Expected cart ID {cart_id},"
+                                            f"got {response_data['id']}")
 
 
 def test_update_cart():
@@ -74,7 +75,8 @@ def test_delete_cart():
 
     get_response = get_cart(cart_id)
     logger.debug(f"Get cart after delete response: {get_response.content}")
-    assert get_response.content == b'null', f"Expected null content, got {get_response.content}"
+    assert get_response.content == b'null', (f"Expected null content,"
+                                             f"got {get_response.content}")
 
 
 def test_list_carts():
@@ -96,12 +98,17 @@ def test_list_carts():
         assert isinstance(cart["products"], list), "Products should be a list"
 
         for product in cart["products"]:
-            assert "productId" in product, "Product should have a 'productId' field"
-            assert "quantity" in product, "Product should have a 'quantity' field"
+            assert "productId" in product, ("Product should have"
+                                            "a 'productId' field")
+            assert "quantity" in product, ("Product should have"
+                                           "a 'quantity' field")
 
-    # Specific data checks (assuming at least one cart is always returned and has valid structure)
+    # Specific data checks (assuming at least one cart is always returned
+    # and has valid structure)
     first_cart = response_data[0]
-    assert first_cart["id"] == 1, f"Expected cart ID to be 1, got {first_cart['id']}"
-    assert first_cart["userId"] == 1, f"Expected user ID to be 1, got {first_cart['userId']}"
+    assert first_cart["id"] == 1, (f"Expected cart ID to be 1,"
+                                   f"got {first_cart['id']}")
+    assert first_cart["userId"] == 1, (f"Expected user ID to be 1,"
+                                       f"got {first_cart['userId']}")
     assert any(product["productId"] == 1 for product in first_cart["products"]), \
         "Expected at least one product with productId 1"
